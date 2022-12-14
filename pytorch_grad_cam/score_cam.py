@@ -10,8 +10,10 @@ class ScoreCAM(BaseCAM):
             target_layers,
             use_cuda=False,
             reshape_transform=None,
+            show_progress=True,
             *args,
             **kwargs):
+        self.show_progress = show_progress
         super(ScoreCAM, self).__init__(model,
                                        target_layers,
                                        use_cuda,
@@ -53,7 +55,8 @@ class ScoreCAM(BaseCAM):
 
             scores = []
             for target, tensor in zip(targets, input_tensors):
-                for i in tqdm.tqdm(range(0, tensor.size(0), BATCH_SIZE)):
+                for i in tqdm.tqdm(range(0, tensor.size(0), BATCH_SIZE),
+                                   disable=not self.show_progress):
                     batch = tensor[i: i + BATCH_SIZE, :]
                     outputs = [target(o).cpu().item()
                                for o in self.model(batch)]
