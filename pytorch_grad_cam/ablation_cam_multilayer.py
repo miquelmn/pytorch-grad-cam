@@ -58,9 +58,9 @@ def replace_layer_recursive(model, old_layer, new_layer):
 
 class AblationCAM(BaseCAM):
     def __init__(self, model, target_layers, use_cuda=False,
-                 reshape_transform=None):
+                 reshape_transform=None, *args, **kwargs):
         super(AblationCAM, self).__init__(model, target_layers, use_cuda,
-                                          reshape_transform)
+                                          reshape_transform, *args, **kwargs)
 
         if len(target_layers) > 1:
             print(

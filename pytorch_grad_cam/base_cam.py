@@ -15,17 +15,19 @@ class BaseCAM:
                  use_cuda: bool = False,
                  reshape_transform: Callable = None,
                  compute_input_gradient: bool = False,
-                 uses_gradients: bool = True) -> None:
+                 uses_gradients: bool = True,
+                 device=None) -> None:
         self.model = model.eval()
         self.target_layers = target_layers
         self.cuda = use_cuda
         if self.cuda:
-            self.model = model.cuda()
+            self.model = model.cuda(device)
         self.reshape_transform = reshape_transform
         self.compute_input_gradient = compute_input_gradient
         self.uses_gradients = uses_gradients
         self.activations_and_grads = ActivationsAndGradients(
             self.model, target_layers, reshape_transform)
+        self.__device = device
 
     """ Get a vector of weights for every channel in the target layer.
         Methods that return weights channels,
@@ -65,7 +67,7 @@ class BaseCAM:
                 eigen_smooth: bool = False) -> np.ndarray:
 
         if self.cuda:
-            input_tensor = input_tensor.cuda()
+            input_tensor = input_tensor.cuda(self.__device)
 
         if self.compute_input_gradient:
             input_tensor = torch.autograd.Variable(input_tensor,

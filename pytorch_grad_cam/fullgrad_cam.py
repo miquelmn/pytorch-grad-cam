@@ -10,7 +10,7 @@ from pytorch_grad_cam.utils.image import scale_accross_batch_and_channels, scale
 
 class FullGrad(BaseCAM):
     def __init__(self, model, target_layers, use_cuda=False,
-                 reshape_transform=None):
+                 reshape_transform=None, *args, **kwargs):
         if len(target_layers) > 0:
             print(
                 "Warning: target_layers is ignored in FullGrad. All bias layers will be used instead")
@@ -29,7 +29,9 @@ class FullGrad(BaseCAM):
             target_layers,
             use_cuda,
             reshape_transform,
-            compute_input_gradient=True)
+            compute_input_gradient=True,
+            *args,
+            **kwargs)
         self.bias_data = [self.get_bias_data(
             layer).cpu().numpy() for layer in target_layers]
 
