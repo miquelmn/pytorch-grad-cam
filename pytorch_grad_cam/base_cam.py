@@ -27,7 +27,7 @@ class BaseCAM:
         self.uses_gradients = uses_gradients
         self.activations_and_grads = ActivationsAndGradients(
             self.model, target_layers, reshape_transform)
-        self.__device = device
+        self.device = device
 
     """ Get a vector of weights for every channel in the target layer.
         Methods that return weights channels,
@@ -67,7 +67,7 @@ class BaseCAM:
                 eigen_smooth: bool = False) -> np.ndarray:
 
         if self.cuda:
-            input_tensor = input_tensor.cuda(self.__device)
+            input_tensor = input_tensor.cuda(self.device)
 
         if self.compute_input_gradient:
             input_tensor = torch.autograd.Variable(input_tensor,

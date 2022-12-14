@@ -31,7 +31,7 @@ class ScoreCAM(BaseCAM):
                 size=input_tensor.shape[-2:])
             activation_tensor = torch.from_numpy(activations)
             if self.cuda:
-                activation_tensor = activation_tensor.cuda()
+                activation_tensor = activation_tensor.cuda(self.device)
 
             upsampled = upsample(activation_tensor)
 
