@@ -1,5 +1,6 @@
 import torch
 import tqdm
+
 from pytorch_grad_cam.base_cam import BaseCAM
 
 
@@ -11,9 +12,11 @@ class ScoreCAM(BaseCAM):
             use_cuda=False,
             reshape_transform=None,
             show_progress=True,
+            batch_size=16,
             *args,
             **kwargs):
         self.show_progress = show_progress
+        self.batch_size = batch_size
         super(ScoreCAM, self).__init__(model,
                                        target_layers,
                                        use_cuda,
@@ -43,7 +46,7 @@ class ScoreCAM(BaseCAM):
                                   upsampled.size(1), -1).min(dim=-1)[0]
 
             maxs, mins = maxs[:, :, None, None], mins[:, :, None, None]
-            upsampled = (upsampled - mins) / (maxs - mins)
+            upsampled = (upsampled - mins) / ((maxs - mins) + 1e-5)
 
             input_tensors = input_tensor[:, None,
                                          :, :] * upsampled[:, :, None, :, :]
