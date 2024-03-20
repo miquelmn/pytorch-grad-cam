@@ -48,21 +48,15 @@ class ScoreCAM(BaseCAM):
             maxs, mins = maxs[:, :, None, None], mins[:, :, None, None]
             upsampled = (upsampled - mins) / ((maxs - mins) + 1e-5)
 
-            input_tensors = input_tensor[:, None,
-                                         :, :] * upsampled[:, :, None, :, :]
-
-            if hasattr(self, "batch_size"):
-                BATCH_SIZE = self.batch_size
-            else:
-                BATCH_SIZE = 16
+            input_tensors = input_tensor[:, None, :, :] * upsampled[:, :, None, :, :]
 
             scores = []
             for target, tensor in zip(targets, input_tensors):
-                for i in tqdm.tqdm(range(0, tensor.size(0), BATCH_SIZE),
+                for i in tqdm.tqdm(range(0, tensor.size(0), self.batch_size),
                                    disable=not self.show_progress):
-                    batch = tensor[i: i + BATCH_SIZE, :]
+                    batch = tensor[i: i + self.batch_size, :]
                     outputs = [target(o).cpu().item()
-                               for o in self.model(batch)]
+                               for o in self.model(batch.cuda(self.device))]
                     scores.extend(outputs)
             scores = torch.Tensor(scores)
             scores = scores.view(activations.shape[0], activations.shape[1])
